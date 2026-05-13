@@ -5,6 +5,7 @@ import Script from 'next/script'
 import { useRouter } from 'next/navigation'
 
 type Props = {
+  productId: string
   productTitle: string
   price: number
   customerName?: string
@@ -19,7 +20,7 @@ declare global {
   }
 }
 
-export default function TossPaymentWidget({ productTitle, price, customerName, customerEmail }: Props) {
+export default function TossPaymentWidget({ productId, productTitle, price, customerName, customerEmail }: Props) {
   const router = useRouter()
   const [agreed, setAgreed] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -49,7 +50,7 @@ export default function TossPaymentWidget({ productTitle, price, customerName, c
         orderName: productTitle,
         customerName: customerName ?? '구매자',
         customerEmail,
-        successUrl: `${window.location.origin}/payment/success`,
+        successUrl: `${window.location.origin}/payment/success?productId=${productId}`,
         failUrl: `${window.location.origin}/payment/fail`,
       })
     } catch (e) {

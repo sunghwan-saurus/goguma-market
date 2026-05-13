@@ -44,6 +44,7 @@ export default async function PaymentPage({
 
       {/* 결제 위젯 */}
       <TossPaymentWidget
+        productId={id}
         productTitle={product.title}
         price={product.price}
         customerEmail={customerEmail}

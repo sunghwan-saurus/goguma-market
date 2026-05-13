@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import { createClient } from '@/lib/supabase/server'
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleString('ko-KR', {
@@ -21,9 +22,9 @@ type PaymentResult = {
 export default async function PaymentSuccessPage({
   searchParams,
 }: {
-  searchParams: Promise<{ paymentKey?: string; orderId?: string; amount?: string }>
+  searchParams: Promise<{ paymentKey?: string; orderId?: string; amount?: string; productId?: string }>
 }) {
-  const { paymentKey, orderId, amount } = await searchParams
+  const { paymentKey, orderId, amount, productId } = await searchParams
 
   if (!paymentKey || !orderId || !amount) redirect('/')
 
@@ -44,6 +45,11 @@ export default async function PaymentSuccessPage({
   const payment: PaymentResult = await response.json()
 
   if (!response.ok) redirect(`/payment/fail?message=${encodeURIComponent((payment as { message?: string }).message ?? '결제 확인 실패')}`)
+
+  if (productId) {
+    const supabase = await createClient()
+    await supabase.from('products').update({ status: '판매완료' }).eq('id', productId)
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4" style={{ background: '#FFF6E8' }}>
