@@ -23,19 +23,24 @@
       padding: 12px 16px;
       display: flex; align-items: center; justify-content: space-between;
     }
-    .logo { font-size: 18px; font-weight: 700; color: #FFD07B; }
-    .login-btn {
-      font-size: 14px; font-weight: 500;
-      color: #FFBE6A; background: none; border: none; cursor: pointer;
+    .logo { font-size: 18px; font-weight: 700; color: #FFD07B; text-decoration: none; }
+    .register-btn {
+      font-size: 13px; font-weight: 600;
+      color: #fff; background: #C94E00;
+      border: none; cursor: pointer;
+      padding: 6px 12px; border-radius: 8px;
+      text-decoration: none;
     }
-    .login-btn:hover { color: #FFD07B; }
+    .register-btn:hover { background: #A33D00; }
 
     ul { max-width: 480px; margin: 0 auto; list-style: none; }
-    li {
+    li { border-bottom: 1px solid #FFE4BA; }
+    li a {
       display: flex; gap: 16px; padding: 20px 16px;
-      border-bottom: 1px solid #FFE4BA; cursor: pointer;
+      cursor: pointer; text-decoration: none;
+      transition: background 0.15s;
     }
-    li:hover { background: #FFF0D6; }
+    li a:hover { background: #FFF0D6; }
 
     .thumb {
       width: 96px; height: 96px; border-radius: 16px;
@@ -71,6 +76,7 @@
       border: none; font-size: 28px; cursor: pointer;
       box-shadow: 0 4px 12px rgba(90, 30, 0, 0.3);
       display: flex; align-items: center; justify-content: center;
+      text-decoration: none;
     }
     .fab:hover { background: #A33D00; }
 
@@ -80,16 +86,16 @@
 <body>
   <header>
     <div class="header-inner">
-      <span class="logo">🍠 고구마마켓</span>
-      <button class="login-btn">로그인</button>
+      <a href="/index.html" class="logo">🍠 고구마마켓</a>
+      <a href="/products/new" class="register-btn">상품 등록</a>
     </div>
   </header>
 
   <ul id="product-list">
-    <li><div class="empty">불러오는 중...</div></li>
+    <li><a><div class="empty">불러오는 중...</div></a></li>
   </ul>
 
-  <button class="fab">+</button>
+  <a href="/products/new" class="fab" aria-label="상품 등록">+</a>
 
   <script>
     const SUPABASE_URL = 'https://wenkiiedbtylxfknzevx.supabase.co'
@@ -135,17 +141,19 @@
 
         return `
           <li>
-            <div class="thumb">${thumb}</div>
-            <div class="info">
-              <div>
-                <div class="title-row">
-                  ${badge}
-                  <span class="title ${isSold ? 'title-sold' : ''}">${p.title}</span>
+            <a href="/products/${p.id}">
+              <div class="thumb">${thumb}</div>
+              <div class="info">
+                <div>
+                  <div class="title-row">
+                    ${badge}
+                    <span class="title ${isSold ? 'title-sold' : ''}">${p.title}</span>
+                  </div>
+                  <div class="meta">${p.seller_name} · ${formatDate(p.created_at)}</div>
                 </div>
-                <div class="meta">${p.seller_name} · ${formatDate(p.created_at)}</div>
+                <div class="price ${isSold ? 'price-sold' : ''}">${formatPrice(p.price)}</div>
               </div>
-              <div class="price ${isSold ? 'price-sold' : ''}">${formatPrice(p.price)}</div>
-            </div>
+            </a>
           </li>
         `
       }).join('')
