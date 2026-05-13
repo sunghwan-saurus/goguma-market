@@ -5,10 +5,11 @@ import Link from 'next/link'
 
 export default async function Home() {
   const supabase = await createClient()
-  const [{ data: products }, { data: { user } }] = await Promise.all([
+  const [{ data: products, error: productsError }, { data: { user } }] = await Promise.all([
     supabase.from('products').select('id, title, price, image_url, seller_name, status, created_at').order('created_at', { ascending: false }),
     supabase.auth.getUser(),
   ])
+  if (productsError) console.error('[products fetch error]', productsError)
 
   return (
     <main className="min-h-screen" style={{ background: '#FFF6E8' }}>
