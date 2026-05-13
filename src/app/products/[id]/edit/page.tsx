@@ -35,16 +35,14 @@ export default function EditProductPage() {
   useEffect(() => {
     async function fetchProduct() {
       const supabase = createClient()
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('id', id)
-        .single()
+      const [{ data: { user } }, { data, error }] = await Promise.all([
+        supabase.auth.getUser(),
+        supabase.from('products').select('*').eq('id', id).single(),
+      ])
 
-      if (error || !data) {
-        router.push('/')
-        return
-      }
+      if (!user) { router.replace('/login'); return }
+      if (error || !data) { router.push('/'); return }
+      if (data.user_id && data.user_id !== user.id) { router.push(`/products/${id}`); return }
 
       setForm({
         title: data.title ?? '',

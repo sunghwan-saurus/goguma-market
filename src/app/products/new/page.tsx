@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
+import type { User } from '@supabase/supabase-js'
 
 type FormData = {
   title: string
@@ -17,6 +18,7 @@ type FormErrors = Partial<Record<keyof FormData, string>>
 
 export default function NewProductPage() {
   const router = useRouter()
+  const [user, setUser] = useState<User | null>(null)
   const [form, setForm] = useState<FormData>({
     title: '',
     price: '',
@@ -24,6 +26,16 @@ export default function NewProductPage() {
     image_url: '',
     seller_name: '',
   })
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) { router.replace('/login'); return }
+      setUser(user)
+      const name = user.user_metadata?.full_name || user.user_metadata?.name || ''
+      setForm(prev => ({ ...prev, seller_name: name }))
+    })
+  }, [router])
   const [errors, setErrors] = useState<FormErrors>({})
   const [loading, setLoading] = useState(false)
   const [serverError, setServerError] = useState('')
@@ -60,6 +72,7 @@ export default function NewProductPage() {
       description: form.description.trim() || null,
       image_url: form.image_url.trim() || null,
       seller_name: form.seller_name.trim(),
+      user_id: user?.id,
     })
 
     setLoading(false)
